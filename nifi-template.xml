@@ -108,7 +108,7 @@
                 <y>0.0</y>
             </position>
             <height>467.53269958496094</height>
-            <label>This section receive flow's using site-to-site, decrypt and decompress, then writes to InfluxDB</label>
+            <label>This section receive flows using site-to-site, decrypt and decompress, then writes to InfluxDB</label>
             <style>
                 <entry>
                     <key>background-color</key>
