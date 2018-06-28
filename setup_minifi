@@ -1,0 +1,31 @@
+#!/bin/bash
+
+REMOTE_HOST=1.2.3.4
+
+# Download and extract MiNiFi
+curl -s http://${REMOTE_HOST}/minifi/minifi-0.4.0-bin.tar.gz > /opt/minifi.tar.gz
+tar xzvf /opt/minifi.tar.gz -C /opt/
+ln -s /opt/minifi-* /opt/minifi
+
+# Setup Python, psutil and OpenJDK
+yum -y install python2-psutil.x86_64 java-1.8.0-openjdk.x86_64
+
+# Download metrics.py
+curl -s http://${REMOTE_HOST}/minifi/metrics.py > /usr/local/bin/metrics.py
+chmod a+x /usr/local/bin/metrics.py
+
+# Download MiNiFi config.yml
+curl -s http://${REMOTE_HOST}/minifi/config.yml > /opt/minifi/conf/config.yml
+
+# Add entry to hosts file
+echo "${REMOTE_HOST} my-nifi" >> /etc/hosts
+
+# Start the MiNiFi
+/opt/minifi/bin/minifi.sh install
+/opt/minifi/bin/minifi.sh start
+
+# Upload a Dashboard to Grafana
+curl -s http://${REMOTE_HOST}/minifi/dashboard.json > /tmp/grafana_dashboard.json
+sed -i "s/xxHOSTNAMExx/$HOSTNAME/g" /tmp/grafana_dashboard.json
+curl --user admin:admin -H "X-Requested-By:ambari" -H "Content-Type: application/json" -X POST http://${REMOTE_HOST}:3000/api/dashboards/db/ -d@/tmp/grafana_dashboard.json
+
