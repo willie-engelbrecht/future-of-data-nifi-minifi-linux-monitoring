@@ -30,6 +30,8 @@ This repo contains additional files to use:
 * setup_minifi: A simple bash script to automate the deployment of MiNiFi on a rpm based distro. Adjust the URL's to your location
 * metrics.py: The script that will be running on each Linux instance to collect stats using Python's psutil module
 
+One thing you will need to do when importing the nifi-template.xml file into NiFi, is that you will need to re-set the Encryption password used in the EncryptContent processor. Please set the value as: Hortonworks
+
 When you're done, you should have a dashboard that looks like:
 ![alt text](https://raw.githubusercontent.com/willie-engelbrecht/future-of-data-nifi-minifi-linux-monitoring/master/Final.JPG "Final State")
 
