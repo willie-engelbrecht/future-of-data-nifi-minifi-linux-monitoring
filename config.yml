@@ -1,0 +1,162 @@
+MiNiFi Config Version: 3
+Flow Controller:
+  name: minifi
+  comment: ''
+Core Properties:
+  flow controller graceful shutdown period: 10 sec
+  flow service write delay interval: 500 ms
+  administrative yield duration: 30 sec
+  bored yield duration: 10 millis
+  max concurrent threads: 1
+  variable registry properties: ''
+FlowFile Repository:
+  partitions: 256
+  checkpoint interval: 2 mins
+  always sync: false
+  Swap:
+    threshold: 20000
+    in period: 5 sec
+    in threads: 1
+    out period: 5 sec
+    out threads: 4
+Content Repository:
+  content claim max appendable size: 10 MB
+  content claim max flow files: 100
+  always sync: false
+Provenance Repository:
+  provenance rollover time: 1 min
+  implementation: org.apache.nifi.provenance.MiNiFiPersistentProvenanceRepository
+Component Status Repository:
+  buffer size: 1440
+  snapshot frequency: 1 min
+Security Properties:
+  keystore: ''
+  keystore type: ''
+  keystore password: ''
+  key password: ''
+  truststore: ''
+  truststore type: ''
+  truststore password: ''
+  ssl protocol: ''
+  Sensitive Props:
+    key:
+    algorithm: PBEWITHMD5AND256BITAES-CBC-OPENSSL
+    provider: BC
+Processors:
+- id: 82160161-ca8e-36aa-0000-000000000000
+  name: CompressContent
+  class: org.apache.nifi.processors.standard.CompressContent
+  max concurrent tasks: 1
+  scheduling strategy: TIMER_DRIVEN
+  scheduling period: 0 sec
+  penalization period: 30 sec
+  yield period: 1 sec
+  run duration nanos: 0
+  auto-terminated relationships list:
+  - failure
+  Properties:
+    Compression Format: gzip
+    Compression Level: '1'
+    Mode: compress
+    Update Filename: 'false'
+- id: 69b1db1a-3caa-3135-0000-000000000000
+  name: EncryptContent
+  class: org.apache.nifi.processors.standard.EncryptContent
+  max concurrent tasks: 1
+  scheduling strategy: TIMER_DRIVEN
+  scheduling period: 0 sec
+  penalization period: 30 sec
+  yield period: 1 sec
+  run duration nanos: 0
+  auto-terminated relationships list:
+  - failure
+  Properties:
+    Encryption Algorithm: SHA256_256AES
+    Mode: Encrypt
+    Password: Hortonworks
+    allow-weak-crypto: not-allowed
+    key-derivation-function: OPENSSL_EVP_BYTES_TO_KEY
+    private-keyring-file:
+    private-keyring-passphrase:
+    public-key-user-id:
+    public-keyring-file:
+    raw-key-hex:
+- id: 3bf1da2b-8dd7-3c04-0000-000000000000
+  name: ExecuteProcess
+  class: org.apache.nifi.processors.standard.ExecuteProcess
+  max concurrent tasks: 1
+  scheduling strategy: TIMER_DRIVEN
+  scheduling period: 10 sec
+  penalization period: 30 sec
+  yield period: 1 sec
+  run duration nanos: 0
+  auto-terminated relationships list: []
+  Properties:
+    Argument Delimiter: ' '
+    Batch Duration:
+    Command: /usr/local/bin/metrics.py
+    Command Arguments:
+    Redirect Error Stream: 'false'
+    Working Directory:
+Controller Services: []
+Process Groups: []
+Input Ports: []
+Output Ports: []
+Funnels: []
+Connections:
+- id: bd3654b6-78db-3c4a-0000-000000000000
+  name: CompressContent/success/EncryptContent
+  source id: 82160161-ca8e-36aa-0000-000000000000
+  source relationship names:
+  - success
+  destination id: 69b1db1a-3caa-3135-0000-000000000000
+  max work queue size: 10000
+  max work queue data size: 1 GB
+  flowfile expiration: 0 sec
+  queue prioritizer class: ''
+- id: 7fce9354-689c-38c7-0000-000000000000
+  name: EncryptContent/success/3ab084c1-0163-1000-3e7c-9b73d4a79ae3
+  source id: 69b1db1a-3caa-3135-0000-000000000000
+  source relationship names:
+  - success
+  destination id: 3ab084c1-0163-1000-3e7c-9b73d4a79ae3
+  max work queue size: 10000
+  max work queue data size: 1 GB
+  flowfile expiration: 0 sec
+  queue prioritizer class: ''
+- id: fd11eb3a-d03d-34e8-0000-000000000000
+  name: ExecuteProcess/success/CompressContent
+  source id: 3bf1da2b-8dd7-3c04-0000-000000000000
+  source relationship names:
+  - success
+  destination id: 82160161-ca8e-36aa-0000-000000000000
+  max work queue size: 10000
+  max work queue data size: 1 GB
+  flowfile expiration: 0 sec
+  queue prioritizer class: ''
+Remote Process Groups:
+- id: a4b1430e-c58f-3986-0000-000000000000
+  name: ''
+  url: http://my-nifi:8081/nifi
+  comment: ''
+  timeout: 30 sec
+  yield period: 10 sec
+  transport protocol: HTTP
+  proxy host: ''
+  proxy port: ''
+  proxy user: ''
+  proxy password: ''
+  local network interface: ''
+  Input Ports:
+  - id: 3ab084c1-0163-1000-3e7c-9b73d4a79ae3
+    name: minifi-system-metrics
+    comment: ''
+    max concurrent tasks: 1
+    use compression: false
+  - id: b31d362d-1c29-14be-40d1-5fd9fbf10e71
+    name: API-S2S
+    comment: ''
+    max concurrent tasks: 1
+    use compression: false
+  Output Ports: []
+NiFi Properties Overrides: {}
