@@ -56,10 +56,14 @@ if __name__ == '__main__':
     # Disk IO
     diskio = psutil.disk_io_counters(perdisk=True)
     for disk in diskio:
-        (read_count, write_count, read_bytes, write_bytes, read_time, write_time, read_merged_count, write_merged_count, busy_time) = diskio[disk]
+        if len(diskio[disk]) == 6:
+            (read_count, write_count, read_bytes, write_bytes, read_time, write_time) = diskio[disk]
+        else:
+            (read_count, write_count, read_bytes, write_bytes, read_time, write_time, read_merged_count, write_merged_count, busy_time) = diskio[disk]
+            writemetric(disk + ".busy_time", busy_time)
+
         writemetric(disk + ".read_bytes", read_bytes)
         writemetric(disk + ".write_bytes", write_bytes)
         writemetric(disk + ".read_time", read_time)
         writemetric(disk + ".write_time", write_time)
-        writemetric(disk + ".busy_time", busy_time)
 
