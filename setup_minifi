@@ -3,7 +3,7 @@
 REMOTE_HOST=1.2.3.4
 
 # Download and extract MiNiFi
-curl -s http://${REMOTE_HOST}/minifi/minifi-0.4.0-bin.tar.gz > /opt/minifi.tar.gz
+curl -s http://${REMOTE_HOST}/minifi/minifi-0.5.0-bin.tar.gz > /opt/minifi.tar.gz
 tar xzvf /opt/minifi.tar.gz -C /opt/
 ln -s /opt/minifi-* /opt/minifi
 
