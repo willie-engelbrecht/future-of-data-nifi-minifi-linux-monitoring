@@ -32,6 +32,13 @@ This repo contains additional files to use:
 
 One thing you will need to do when importing the nifi-template.xml file into NiFi, is that you will need to re-set the Encryption password used in the EncryptContent processor. Please set the value as: Hortonworks
 
+### Running the script by hand
+You can also run the script without the help of MiNiFi by using a bash while true loop, and upload the files to NiFi yourself later on:
+```
+while :; do python2 metrics.py >> /tmp/$(hostname)_metrics.log; sleep 5; done;
+```
+This will save the output to /tmp/<hostname_of_your_machine>_metrics.log
+
 When you're done, you should have a dashboard that looks like:
 ![alt text](https://raw.githubusercontent.com/willie-engelbrecht/future-of-data-nifi-minifi-linux-monitoring/master/Final.JPG "Final State")
 
